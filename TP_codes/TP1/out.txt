@@ -1,0 +1,232 @@
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix RES
+	15	18	21	
+	42	54	66	
+	69	90	111	
+	
+QUESTION 3.1 = 0.000569 mlsec
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	69	90	111	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	-1823473328	32621	6	
+	
+Matrix RES
+	648020643	65246	17	
+	-527432036	163124	56	
+	0	0	0	
+	
+QUESTION 3.2 (schedule defined by me :) ) = 0.000341 mlsec
+Task 0 at thread 0
+Task 1 at thread 1
+Task 2 at thread 0
+Task 0 at thread 0
+Task 1 at thread 1
+Task 2 at thread 0
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix RES
+	15	18	1	
+	42	0	66	
+	69	90	111	
+	
+QUESTION 3.3 (schedule STATIC) = 0.000329 mlsec
+Task 0 at thread 0
+Task 2 at thread 1
+Task 1 at thread 0
+Task 0 at thread 0
+Task 2 at thread 1
+Task 1 at thread 0
+
+Matrix A
+	0	1	2	
+	6	7	8	
+	3	4	5	
+	
+Matrix B
+	0	1	2	
+	6	7	8	
+	3	4	5	
+	
+Matrix RES
+	12	15	1	
+	66	87	108	
+	39	90	63	
+	
+QUESTION 3.3 (schedule DYNAMIC) = 0.000282 mlsec
+
+QUESTION 3.7 - Everyone is sleeping 0.000282 seconds after each calc
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix RES
+	15	18	21	
+	42	54	66	
+	69	90	111	
+	
+SEQUENTIAL = 0.090832 mlsec
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	69	90	111	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	10000000	0	3	
+	
+Matrix RES
+	20000003	4	11	
+	50000012	19	41	
+	0	0	3	
+		PARALLEL (schedule defined by me :) ) = 0.030412 mlsec
+Task 1 at thread 0
+Task 0 at thread 1
+Task 2 at thread 0
+Task 0 at thread 1
+Task 1 at thread 0
+Task 2 at thread 0
+
+Matrix A
+	3	4	5	
+	0	1	2	
+	6	7	8	
+	
+Matrix B
+	3	4	5	
+	0	1	2	
+	6	7	8	
+	
+Matrix RES
+	39	51	63	
+	12	15	32766	
+	66	0	108	
+		PARALLEL (schedule STATIC) = 0.040476 mlsec
+Task 0 at thread 0
+Task 1 at thread 0
+Task 2 at thread 1
+Task 2 at thread 1
+Task 0 at thread 0
+Task 1 at thread 0
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix RES
+	15	18	63	
+	42	54	66	
+	69	0	111	
+		PARALLEL (schedule DYNAMIC) = 0.050569 mlsec
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix RES
+	15	18	21	
+	42	54	66	
+	69	90	111	
+	
+Matrix A
+	0	1	2	
+	3	4	5	
+	69	90	111	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	10000000	0	0	
+	
+Matrix RES
+	20000003	4	5	
+	50000012	19	26	
+	0	0	0	
+	Task 1 at thread 0
+Task 0 at thread 1
+Task 2 at thread 0
+Task 0 at thread 0
+Task 1 at thread 1
+Task 2 at thread 0
+
+Matrix A
+	3	4	5	
+	0	1	2	
+	6	7	8	
+	
+Matrix B
+	3	4	5	
+	0	1	2	
+	6	7	8	
+	
+Matrix RES
+	39	51	1	
+	12	-272728608	18	
+	66	87	108	
+	Task 0 at thread 0
+Task 1 at thread 0
+Task 2 at thread 1
+Task 0 at thread 0
+Task 2 at thread 1
+Task 1 at thread 0
+
+Matrix A
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix B
+	0	1	2	
+	3	4	5	
+	6	7	8	
+	
+Matrix RES
+	15	18	1	
+	42	-272728608	66	
+	69	90	111	
+	QUESTION 4.2 - INVALID CHECKSUN
