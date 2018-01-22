@@ -440,18 +440,29 @@ int main(int argc, char **argv){
 
 	printf("\nQUESTION 3.2 (schedule defined by me :) ) = %f mlsec\n", (PendTime- PinitTime ));
 
+
+// ============= QUESTION 3.3 ===================
+	// ======================================================== //
+	//                    Question 3.3:                         //
+	//                        --//--                            //
+	// To verify that both calculs are identic just execute with//
+	// the VERBOSE mode. Otherwise you can verify the checksum  //
+	// verification too.                                        //
+	// =========================================================//
+
+
 // ============= QUESTION 3.4 ===================
 	PinitTime= omp_get_wtime();
 	question3dot3(0,0, NULL);
 	PendTime= omp_get_wtime();
 
-	printf("\nQUESTION 3.3 (schedule STATIC) = %f mlsec\n", (PendTime- PinitTime ));
+	printf("\nQUESTION 3.4 (schedule STATIC) = %f mlsec\n", (PendTime- PinitTime ));
 
 	PinitTime= omp_get_wtime();
 	question3dot3(1,0, NULL);
 	PendTime= omp_get_wtime();
 
-	printf("\nQUESTION 3.3 (schedule DYNAMIC) = %f mlsec\n", (PendTime- PinitTime ));
+	printf("\nQUESTION 3.4 (schedule DYNAMIC) = %f mlsec\n", (PendTime- PinitTime ));
 
 // ============= QUESTION 3.5 ===================
 	// ======================================================== //
@@ -541,12 +552,12 @@ int main(int argc, char **argv){
 	
 	printf("\nQUESTION 4.1 - All tests are beeing tested again... wait a minute...\n");
 	CKS seq, pa_static, pa_dynamic, pa_byhand;
-	seq.CSL = (int*) calloc(N,sizeof(int));
-	seq.CSC = (int*) calloc(N,sizeof(int));	
+	seq.CSL       = (int*) calloc(N,sizeof(int));
+	seq.CSC       = (int*) calloc(N,sizeof(int));	
 	pa_static.CSL = (int*) calloc(N,sizeof(int));
 	pa_static.CSC = (int*) calloc(N,sizeof(int));	
-	pa_dynamic.CSL = (int*) calloc(N,sizeof(int));
-	pa_dynamic.CSC = (int*) calloc(N,sizeof(int));	
+	pa_dynamic.CSL= (int*) calloc(N,sizeof(int));
+	pa_dynamic.CSC= (int*) calloc(N,sizeof(int));	
 	pa_byhand.CSL = (int*) calloc(N,sizeof(int));
 	pa_byhand.CSC = (int*) calloc(N,sizeof(int));	
 	
@@ -561,4 +572,21 @@ int main(int argc, char **argv){
 	}else{
 		printf("\tINVALID CHECKSUN\n");
 	}
+
+//  // ================ == TIME TABLE == =====================  //
+	//  ______________________________________________________  //
+	// |Table of results with 16 threads - SLEEP=0.03s - (sec)| //
+	//  ------------------------------------------------------  //
+	// |  MODE  |   5x5   | 10x10  |  20x20 | 50x50 | 100x100 | //
+	//  ------------------------------------------------------  //
+	// |   SEQ  |   0.25  |  1.00  |  4.03  | 25.25 |  101.04 | //
+	// |PAR. STA|   0.05  |  0.10  |  0.41  | 2.018 |  7.072  | //
+	// |PAR. DYN|   0.05  |  0.10  |  0.41  | 2.020 |  7.073  | //
+	// |PAR. BYH|   0.25  |  1.00  |  1.01  | 2.525 |  10.10  | //
+	//  ------------------------------------------------------| //
+	//   Table 1 - Time results considering SLEEP as 0.03s.     //
+	//             All times are in seconds.                    //
+	// ======================================================== //
+
+
 }
