@@ -19,7 +19,7 @@ DESCRIPTION:
              l’équation de la chaleur bidimensionnelle
 
 INSTRUCTIONS:
-        How to compile: mpicc –o Final_Parallel_heat2D Final_Parallel_heat2D.c -lm
+        How to compile: mpicc -o Final_Parallel_heat2D Final_Parallel_heat2D.c -lm
         How to execute: mpirun -np NB_Of_THREADS Final_Parallel_heat2D
             
             
@@ -30,6 +30,78 @@ This project is also available at Github
 
 
 */
+
+
+/// ---------------------------------- R E S U L T S  -------------------------------------///
+/*
+    For this TP I've worked in two versions. The first one (file Parallel_heat2D_WithoutSCATTER-GATTER.c)
+    all the communications are based in Recv and Sendv. The data sharing was defined by me in
+    execution time. When this one was working fine, I started this version using the functions
+    Gather and Scatter. In every iteration all threads send the data for the thread 0 using Gather
+    and the last and first line for each neighbors using the P2P functions (Recv and Send). Actually
+    I used the ISend (assyncronous version) to send and the syncronous version to receive. I've
+    made some tests and everything is ok. After some executions changing the size of the matrix
+    and the number of threads I've the following results:
+
+    NOTE: The number of iterations was fixed in 100. For the benchmask I didn't execute writing 
+          each step on the out_put file. I did it because the writing procedure isn't parralelized
+          and it blockk the execution time.
+
+    ___________________________________________
+   |               Matrix 500x500              |
+    -------------------------------------------
+   |Nb of threads| Cpu Time (s) | comm Time (s)|
+    -------------------------------------------
+   |      1      |     3.95     |     0.02     |
+   |      4      |     1.14     |     0.06     |
+   |      8      |     1.03     |     0.08     |
+   |      12     |     0.83     |     0.09     |
+   |      16     |     0.60     |     0.11     |
+    -------------------------------------------
+
+
+    ___________________________________________
+   |              Matrix 1000x1000             |
+    -------------------------------------------
+   |Nb of threads| Cpu Time (s) | comm Time (s)|
+    -------------------------------------------
+   |      1      |     16.67    |     0.26     | 
+   |      4      |      4.04    |     0.25     |
+   |      8      |      2.74    |     0.28     |
+   |      12     |      2.08    |     0.29     |
+   |      16     |      2.49    |     0.31     |
+    -------------------------------------------
+
+
+    ___________________________________________
+   |              Matrix 1500x1500             |
+    -------------------------------------------
+   |Nb of threads| Cpu Time (s) | comm Time (s)|
+    -------------------------------------------
+   |      1      |      19.06     |    0.37    |   
+   |      4      |       5.77     |    0.39    |
+   |      8      |       4.62     |    0.41    | 
+   |      12     |       3.25     |    0.45    |     
+   |      16     |       2.91     |    0.51    | 
+    -------------------------------------------
+
+
+    ___________________________________________
+   |              Matrix 10000x10000           |
+    -------------------------------------------
+   |Nb of threads| Cpu Time (s) | comm Time (s)|
+    -------------------------------------------
+   |      1      |      277.02    |    4.75    |   
+   |      4      |      90.77     |    4.98    |
+   |      8      |      59.88     |    5.21    | 
+   |      12     |      47.14     |    5.98    |     
+   |      16     |      37.21     |    6.19    | 
+    -------------------------------------------
+
+
+
+*/
+/// --------------------------- E N D   O F   R E S U L T S  -----------------------------///
 
 
 //
@@ -164,7 +236,7 @@ void exchangeData(double **data1, double **data2)
 int main(int argc, char **argv)
 {
     //TimeStamp Variables 
-    double PinitTime, PendTime;
+    double PinitTime, PendTime, CommTime=0.0,CommInitTime,calcTime=0.0, calcInittime, writingTime=0.0, startWritingTime;
 
     //Commom variables
     int rang, nbProcs;
@@ -193,9 +265,8 @@ int main(int argc, char **argv)
 
     //Getting the initial time
     MPI_Barrier(MPI_COMM_WORLD);
-    if(rang==0){
-        PinitTime = MPI_Wtime();
-    }
+
+ 
    
     //Nb of lines per node
     int blocksize = (nbLigs-2) / nbProcs;
@@ -234,9 +305,10 @@ int main(int argc, char **argv)
 
         //creating the first matrix
         startMatrix = initData(nbLigs, nbCols);
- 
+        PinitTime = MPI_Wtime();
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
 //Sending the information for everyone
     MPI_Scatterv(startMatrix+nbCols, sendcounts, displs, MPI_DOUBLE, data1+nbCols, sendcounts[rang], MPI_DOUBLE, 0, MPI_COMM_WORLD);
     
@@ -252,6 +324,12 @@ int main(int argc, char **argv)
         for (step=0; step<  NBSTEP; step++) {
             //Share my information with my neighbor
             MPI_Request SendRequest, SendRequest2;
+            
+            MPI_Barrier(MPI_COMM_WORLD);
+            if(rang==0){
+                CommInitTime = MPI_Wtime();
+            } 
+            
 
             //Sending my data
             if(rang!=0){ 
@@ -263,23 +341,45 @@ int main(int argc, char **argv)
             if(rang!=nbProcs-1 && nbProcs!=1){
                  //Ok, I'm not the last thread, so I've to send my last line and to receive the first one from everyone else
                  MPI_Recv(data1 + (blocksize+1)*nbCols, nbCols , MPI_DOUBLE,rang+1,0,MPI_COMM_WORLD,&statut);
-                 MPI_Isend(data1 + (blocksize)*nbCols, nbCols , MPI_DOUBLE,rang+1,0,MPI_COMM_WORLD,&SendRequest);
+                 MPI_Isend(data1 + (blocksize)*nbCols, nbCols , MPI_DOUBLE,rang+1,0,MPI_COMM_WORLD,&SendRequest2);
             }
+            
+            MPI_Barrier(MPI_COMM_WORLD);
+            if(rang==0){
+                CommTime +=(MPI_Wtime()-CommInitTime);
+                calcInittime=MPI_Wtime();
+            } 
+            
 
             updateNLigs(data1, data2, 1, blocksize, nbCols, MASK);
             exchangeData(&data1, &data2);
 
+            //This part gets the communication time
+             MPI_Barrier(MPI_COMM_WORLD);
+            if(rang==0){
+                calcTime+=(MPI_Wtime() - calcInittime);
+                CommInitTime = MPI_Wtime();
+            }
+            
             //Send my data to thread 0
             MPI_Gatherv(data1+nbCols, sendcounts[rang], MPI_DOUBLE, startMatrix+nbCols, sendcounts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   
-  
+            MPI_Barrier(MPI_COMM_WORLD);
+            if(rang==0){
+                CommTime += (MPI_Wtime()-CommInitTime);
+                
+            } 
+            
             // the thread 0 must save the data at the file
             if(rang==0){
-                appendData(startMatrix, nbLigs, nbCols, "saveData_Parallel_version");
+                startWritingTime = MPI_Wtime();
+                //appendData(startMatrix, nbLigs, nbCols, "saveData_Parallel_version");
+                writingTime += (MPI_Wtime()-startWritingTime);
             }
+
+
         }
      }
-
 
     if (data2) free(data2);
     if (data1) free(data1);
@@ -289,7 +389,11 @@ int main(int argc, char **argv)
     MPI_Barrier(MPI_COMM_WORLD);
     if(rang==0){
         PendTime = MPI_Wtime();
-        printf("\tTotal Time %f mlsec\n", (PendTime- PinitTime ));
+        printf("\tTotal CPU Time %f sec\n", (PendTime - PinitTime));
+        printf("\tTotal Communication Time (considering the Gatter at each iteration)= %f sec\n", CommTime);
+        printf("\tTotal Calculation Time = %f sec\n", calcTime);
+        printf("\tTotal Writing Time = %f sec\n", writingTime);
+           
     }
 
     //Finalize the MPI context
